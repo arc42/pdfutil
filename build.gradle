@@ -1,0 +1,87 @@
+project.description = 'arc42.org: (Tiny) Pdf Util'
+project.version = "0.3"
+
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+
+repositories {
+    mavenCentral()
+}
+
+
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.8.+'
+    compile group: 'com.itextpdf', name: 'itextpdf', version: '5.4.0'
+    compile group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '4.5'
+}
+
+
+
+//sourceCompatibility = 1.6
+
+/**
+ * be strict about unchecked-cast operations
+ */
+compileJava.options.compilerArgs = ['-Xlint:unchecked']
+
+
+
+/**
+ * copy some files into distribution:
+ *   - readme.md
+ *   - license.txt
+ *   - pdfutil-logo.jpg
+ */
+
+applicationDistribution.from( './') {
+    include "license.txt", "pdfutil-logo.jpg", "readme.md"
+    into( buildDir )
+}
+
+
+mainClassName = "org.arc42.pdfutil.PdfUtilRunner"
+
+
+/**
+ * configure the jar output
+ * (jar located in ./build/lib)
+ */
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': project.description,
+                'Implementation-Version': project.version,
+                'Main-Class': "org.arc42.pdfutil.PdfUtilRunner",
+                'Class-Path': 'itextpdf-5.4.0.jar jopt-simple-4.5.jar'
+    }
+
+}
+
+
+
+/**
+ * Sonarqube integration
+ *****************************************/
+
+apply plugin: "sonar-runner"
+//****************************
+
+
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.jdbc.url", "jdbc:postgresql://localhost/sonar"
+
+        //property "sonar.jdbc.url", "jdbc:h2:tcp://localhost:9092/sonar"
+        //property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "sonar"
+
+        properties["sonar.sources"] += sourceSets.main.allSource.srcDirs
+        properties["sonar.tests"] += sourceSets.test.allSource.srcDirs
+    }
+}

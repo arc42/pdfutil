@@ -1,0 +1,3 @@
+This directory contains some pdf files used for testing.
+
+The unit tests require these files to exist - so please don't delete...
